@@ -1,0 +1,74 @@
+{
+    "name": "react-visual-window",
+    "version": "0.0.1",
+    "author": "Patrick Malleier <github@numero33.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/numero33/react-visual-window/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/numero33/react-visual-window.git"
+    },
+    "keywords": [
+        "react",
+        "reactjs",
+        "virtual",
+        "window",
+        "windowed",
+        "list",
+        "scrolling",
+        "virtualized",
+        "table"
+    ],
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "files": [
+        "dist",
+        "src/*.js"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "flow": "flow check --max-warnings=0 src",
+        "precommit": "lint-staged",
+        "prettier": "prettier --write '**/*.{js,json,css}'",
+        "linc": "lint-staged",
+        "lint": "eslint '**/*.js'",
+        "test": "cross-env CI=1 react-scripts test --env=jsdom",
+        "test:watch": "react-scripts test --env=jsdom",
+        "build:flow": "cp flow-template dist/index.cjs.js.flow && cp flow-template dist/index.esm.js.flow",
+        "build:source": "rollup -c",
+        "build": "rm -rf dist && mkdir dist && yarn build:flow && yarn build:source",
+        "start": "rollup -c -w",
+        "prepare": "yarn run build"
+    },
+    "peerDependencies": {
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.11.6",
+        "@babel/plugin-transform-runtime": "^7.11.5",
+        "babel-eslint": "^10.1.0",
+        "eslint": "^7.10.0",
+        "eslint-config-prettier": "^6.12.0",
+        "eslint-config-react-app": "^5.2.1",
+        "eslint-plugin-flowtype": "^5.2.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-jsx-a11y": "^6.3.1",
+        "eslint-plugin-prettier": "^3.1.4",
+        "eslint-plugin-react": "^7.21.3",
+        "eslint-plugin-react-hooks": "^4.1.2",
+        "flow-bin": "^0.135.0",
+        "prettier": "^2.1.2",
+        "prop-types": "^15.7.2",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "rollup": "^2.28.2",
+        "rollup-plugin-babel": "^4.4.0",
+        "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-replace": "^2.2.0",
+        "rollup-plugin-terser": "^7.0.2"
+    }
+}
