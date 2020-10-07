@@ -1,11 +1,13 @@
 // @flow
 
-import {useRef, useState, useMemo, createElement, useEffect} from "react"
+import {useRef, useState, useMemo, createElement, useEffect, useCallback} from "react"
 import PropTypes from "prop-types"
 import useScrollPosition from "./useScrollPosition"
 
 const VisualWindow = props => {
-    const {children, defaultItemHeight, itemCount, className, itemData, detectHeight} = props
+    const {children, defaultItemHeight, className, itemData, detectHeight} = props
+
+    const itemCount = useMemo(() => itemData.length, [itemData])
 
     const [measurements, setMeasurement] = useState({})
 
@@ -13,12 +15,26 @@ const VisualWindow = props => {
     const childRef = useRef(new Map()).current
     const {position: scrollPosition} = useScrollPosition()
 
+    const checkMeasurements = useCallback(() => {
+        for (const [i, c] of childRef.entries()) {
+            const bounding = c.getBoundingClientRect()
+            if (bounding.height !== defaultItemHeight && (measurements[i] === undefined || measurements[i].height !== bounding.height)) setMeasurement(x => ({...x, [i]: bounding}))
+            if (bounding.height === defaultItemHeight && measurements[i] !== undefined) {
+                setMeasurement(x => {
+                    const tmp = {...x}
+                    delete tmp[i]
+                    return tmp
+                })
+            }
+        }
+    }, [childRef, defaultItemHeight, measurements])
+
     useEffect(() => {
         if (!detectHeight && Object.keys(measurements).length > 0) setMeasurement({})
     }, [detectHeight, measurements])
     useEffect(() => {
-        setMeasurement({})
-    }, [itemData])
+        if (detectHeight) checkMeasurements()
+    }, [checkMeasurements, detectHeight, itemData])
 
     const height = useMemo(() => defaultItemHeight * itemCount + Object.values(measurements).reduce((sum, val) => (sum += val.height - defaultItemHeight), 0), [defaultItemHeight, itemCount, measurements])
 
@@ -87,30 +103,16 @@ const VisualWindow = props => {
     }, [startItem, defaultItemHeight, itemRenderCount, children, itemData, detectHeight])
 
     useEffect(() => {
-        if (!detectHeight) return () => {}
+        if (!detectHeight || !ref.current) return () => {}
 
-        const observer = new MutationObserver(() => {
-            for (const [i, c] of childRef.entries()) {
-                const bounding = c.getBoundingClientRect()
-                if (bounding.height !== defaultItemHeight && (measurements[i] === undefined || measurements[i].height !== bounding.height)) setMeasurement(x => ({...x, [i]: bounding}))
-                if (bounding.height === defaultItemHeight && measurements[i] !== undefined) {
-                    setMeasurement(x => {
-                        const tmp = {...x}
-                        delete tmp[i]
-                        return tmp
-                    })
-                }
-            }
+        const observer = new MutationObserver(() => checkMeasurements())
+        observer.observe(ref.current, {
+            attributes: false,
+            childList: true,
+            subtree: true,
         })
-        if (ref.current)
-            observer.observe(ref.current, {
-                attributes: false,
-                childList: true,
-                subtree: true,
-            })
-
         return () => observer.disconnect()
-    }, [childRef, defaultItemHeight, measurements, detectHeight])
+    }, [detectHeight, checkMeasurements])
 
     return createElement(
         "div",
@@ -125,10 +127,9 @@ const VisualWindow = props => {
 
 VisualWindow.propTypes = {
     children: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired,
+    itemData: PropTypes.array.isRequired,
     defaultItemHeight: PropTypes.number.isRequired,
-    itemCount: PropTypes.number.isRequired,
     className: PropTypes.string,
-    itemData: PropTypes.array,
     detectHeight: PropTypes.bool,
 }
 
