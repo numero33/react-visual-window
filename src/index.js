@@ -83,7 +83,8 @@ const VisualWindow = props => {
             },
             output,
         )
-    }, [startItem, defaultItemHeight, itemRenderCount, children, itemData, childRef, measurements, detectHeight])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [startItem, defaultItemHeight, itemRenderCount, children, itemData, detectHeight])
 
     useEffect(() => {
         if (!detectHeight) return () => {}
