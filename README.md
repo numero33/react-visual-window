@@ -56,8 +56,6 @@ export default function App() {
 }
 ```
 
-Here's a [Code Sandbox demo](https://codesandbox.io/s/0mk3qwpl4l).
-
 ## License
 
 MIT © [n33pm](https://github.com/n33pm)
