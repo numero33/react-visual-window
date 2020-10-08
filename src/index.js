@@ -41,7 +41,7 @@ const VisualWindow = props => {
     const itemRenderCount = useMemo(() => (defaultItemHeight === 0 ? 0 : Math.min(Math.ceil(Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) / defaultItemHeight), itemCount)), [defaultItemHeight, itemCount])
 
     const startItem = useMemo(() => {
-        if (ref.current === null && itemCount === 0) return 0
+        if (ref.current === null || itemCount === 0) return 0
 
         const windowOffset = ref.current.getBoundingClientRect().top
         if (windowOffset > 0) return 0
