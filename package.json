@@ -43,7 +43,7 @@
         "prepare": "yarn run build"
     },
     "peerDependencies": {
-        "react": "^16.13.1",
+        "react": "^16.14.0",
         "react-dom": "^16.13.1"
     },
     "devDependencies": {
@@ -63,7 +63,7 @@
         "flow-bin": "^0.137.0",
         "prettier": "^2.1.2",
         "prop-types": "^15.7.2",
-        "react": "^16.13.1",
+        "react": "^16.14.0",
         "react-dom": "^16.13.1",
         "react-scripts": "^3.4.3",
         "react-test-renderer": "^16.13.1",
