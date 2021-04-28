@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react"
 
-const getPosition = isClient => {
+const getPosition = (isClient: boolean) => {
     return {
-        position: isClient ? window.scrollY : undefined,
+        scrollY: isClient ? window.scrollY : undefined,
     }
 }
 
@@ -12,7 +12,7 @@ export default function useScrollPosition() {
     const [scrollPosition, setScrollPosition] = useState(getPosition(isClient))
 
     useEffect(() => {
-        if (!isClient) return false
+        if (!isClient) return undefined
 
         function handleScroll() {
             setScrollPosition(getPosition(isClient))

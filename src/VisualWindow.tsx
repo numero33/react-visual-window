@@ -1,19 +1,29 @@
-// @flow
-
 import {useRef, useState, useMemo, createElement, useEffect, useCallback} from "react"
-import PropTypes from "prop-types"
 import useScrollPosition from "./useScrollPosition"
 
-const VisualWindow = props => {
-    const {children, defaultItemHeight, className, itemData, detectHeight} = props
+interface VisualWindowProps {
+    children: React.FunctionComponent
+    defaultItemHeight: number
+    itemData: Array<unknown>
+    className?: string
+    detectHeight?: boolean
+}
 
+interface VisualWindowChildProps<T> {
+    index: number
+    data: Array<unknown>
+    style: React.CSSProperties
+    ref?: React.Ref<T>
+}
+
+export function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = true}: VisualWindowProps) {
     const itemCount = useMemo(() => itemData.length, [itemData])
 
-    const [measurements, setMeasurement] = useState({})
+    const [measurements, setMeasurement] = useState<{[k: number]: DOMRect}>({})
 
-    const ref = useRef(null)
-    const childRef = useRef(new Map()).current
-    const {position: scrollPosition} = useScrollPosition()
+    const ref = useRef<HTMLDivElement>(null)
+    const childRef = useRef(new Map<number, HTMLElement>()).current
+    const {scrollY: scrollPosition} = useScrollPosition()
 
     const checkMeasurements = useCallback(() => {
         for (const [i, c] of childRef.entries()) {
@@ -56,7 +66,6 @@ const VisualWindow = props => {
         const max = Math.max(itemCount - itemRenderCount, 0)
 
         return Math.min(Math.max(start, 0), max)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ref, scrollPosition, defaultItemHeight, itemCount, itemRenderCount, measurements])
 
     const calcChildren = useMemo(() => {
@@ -66,14 +75,14 @@ const VisualWindow = props => {
 
             if (typeof children === "object") {
                 addRef = {
-                    ref: x => {
+                    ref: (x: HTMLElement) => {
                         if (x === null) childRef.delete(i)
                         else childRef.set(i, x)
                     },
                 }
             }
             output.push(
-                createElement(children, {
+                createElement<VisualWindowChildProps<HTMLElement>>(children, {
                     index: i,
                     data: itemData,
                     style: {
@@ -86,7 +95,7 @@ const VisualWindow = props => {
             )
         }
 
-        const measurementCorrection = Object.keys(measurements).reduce((sum, val) => (val < startItem ? sum + measurements[val].height - defaultItemHeight : sum), 0)
+        const measurementCorrection = Object.keys(measurements).reduce((sum, val: unknown) => ((val as number) < startItem ? sum + measurements[val as number].height - defaultItemHeight : sum), 0)
 
         return createElement(
             "div",
@@ -124,17 +133,3 @@ const VisualWindow = props => {
         itemCount > 0 && itemRenderCount > 0 && calcChildren,
     )
 }
-
-VisualWindow.propTypes = {
-    children: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired,
-    itemData: PropTypes.array.isRequired,
-    defaultItemHeight: PropTypes.number.isRequired,
-    className: PropTypes.string,
-    detectHeight: PropTypes.bool,
-}
-
-VisualWindow.defaultProps = {
-    detectHeight: true,
-}
-
-export default VisualWindow

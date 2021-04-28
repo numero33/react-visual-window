@@ -10,9 +10,6 @@
         "type": "git",
         "url": "https://github.com/numero33/react-visual-window.git"
     },
-    "engines": {
-        "node": ">8.0.0"
-    },
     "keywords": [
         "react",
         "reactjs",
@@ -24,55 +21,68 @@
         "virtualized",
         "table"
     ],
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
     "files": [
         "dist",
-        "src/*.js"
+        "src"
     ],
-    "sideEffects": false,
+    "engines": {
+        "node": ">=10"
+    },
     "scripts": {
-        "flow": "flow check --max-warnings=0 src",
-        "lint": "eslint '**/*.js'",
-        "test": "cross-env CI=1 react-scripts test --env=jsdom",
-        "test:watch": "react-scripts test --env=jsdom",
-        "build:flow": "cp flow-template dist/index.cjs.js.flow && cp flow-template dist/index.esm.js.flow",
-        "build:source": "rollup -c",
-        "build": "rm -rf dist && mkdir dist && yarn build:flow && yarn build:source",
-        "start": "rollup -c -w",
-        "prepare": "yarn run build"
+        "start": "tsdx watch",
+        "build": "tsdx build",
+        "test": "tsdx test --passWithNoTests",
+        "test:coverage": "yarn run test --coverage",
+        "coverage:report": "open coverage/lcov-report/index.html",
+        "lint": "tsdx lint",
+        "prepare": "tsdx build",
+        "size": "size-limit",
+        "analyze": "size-limit --why"
     },
     "peerDependencies": {
-        "react": "^16.14.0",
-        "react-dom": "^16.14.0"
+        "react": ">=16"
     },
+    "husky": {
+        "hooks": {
+            "pre-commit": "tsdx lint"
+        }
+    },
+    "prettier": {
+        "printWidth": 1000,
+        "tabWidth": 4,
+        "useTabs": false,
+        "semi": false,
+        "singleQuote": false,
+        "trailingComma": "all",
+        "bracketSpacing": false,
+        "jsxBracketSameLine": true,
+        "arrowParens": "avoid",
+        "endOfLine": "auto"
+    },
+    "module": "dist/react-visual-window.esm.js",
+    "size-limit": [
+        {
+            "path": "dist/react-visual-window.cjs.production.min.js",
+            "limit": "2 KB"
+        },
+        {
+            "path": "dist/react-visual-window.esm.js",
+            "limit": "2 KB"
+        }
+    ],
     "devDependencies": {
-        "@babel/core": "^7.13.16",
-        "@babel/plugin-transform-runtime": "^7.13.15",
-        "babel-eslint": "^10.1.0",
-        "cross-env": "^7.0.3",
-        "eslint": "^7.25.0",
-        "eslint-config-prettier": "^8.3.0",
-        "eslint-config-react-app": "^6.0.0",
-        "eslint-plugin-flowtype": "^5.7.2",
-        "eslint-plugin-import": "^2.22.1",
-        "eslint-plugin-jsx-a11y": "^6.4.1",
-        "eslint-plugin-prettier": "^3.4.0",
-        "eslint-plugin-react": "^7.23.2",
-        "eslint-plugin-react-hooks": "^4.2.0",
-        "flow-bin": "^0.149.0",
-        "prettier": "^2.2.1",
-        "prop-types": "^15.7.2",
+        "@size-limit/preset-small-lib": "^4.10.2",
+        "@testing-library/react": "^11.2.6",
+        "@types/react": "^17.0.4",
+        "@types/react-dom": "^17.0.3",
+        "husky": "^6.0.0",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
-        "react-scripts": "^4.0.3",
-        "react-test-renderer": "^17.0.2",
-        "rollup": "^2.45.2",
-        "rollup-plugin-babel": "^4.4.0",
-        "rollup-plugin-commonjs": "^10.1.0",
-        "rollup-plugin-node-resolve": "^5.2.0",
-        "rollup-plugin-replace": "^2.2.0",
-        "rollup-plugin-terser": "^7.0.2"
-    },
-    "dependencies": {}
+        "size-limit": "^4.10.2",
+        "tsdx": "^0.14.1",
+        "tslib": "^2.2.0",
+        "typescript": "^4.2.4"
+    }
 }
