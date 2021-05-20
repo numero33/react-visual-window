@@ -1,6 +1,6 @@
 import * as React from "react"
 import {render} from "@testing-library/react"
-import {VisualWindow} from "../src"
+import VisualWindow from "../src"
 
 const itemData = new Array(100).fill(null).map((_, i) => ({odd: i % 2}))
 

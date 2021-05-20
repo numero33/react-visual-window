@@ -1,22 +1,21 @@
 import {useRef, useState, useMemo, createElement, useEffect, useCallback} from "react"
 import useScrollPosition from "./useScrollPosition"
 
-interface VisualWindowProps {
-    children: React.FunctionComponent
+export interface VisualWindowProps {
+    children: unknown
     defaultItemHeight: number
     itemData: Array<unknown>
     className?: string
     detectHeight?: boolean
 }
 
-interface VisualWindowChildProps<T> {
+export interface VisualWindowChildProps {
     index: number
     data: Array<unknown>
     style: React.CSSProperties
-    ref?: React.Ref<T>
 }
 
-export function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = true}: VisualWindowProps) {
+export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = true}: VisualWindowProps) {
     const itemCount = useMemo(() => itemData.length, [itemData])
 
     const [measurements, setMeasurement] = useState<{[k: number]: DOMRect}>({})
@@ -66,6 +65,7 @@ export function VisualWindow({children, defaultItemHeight, className, itemData, 
         const max = Math.max(itemCount - itemRenderCount, 0)
 
         return Math.min(Math.max(start, 0), max)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ref, scrollPosition, defaultItemHeight, itemCount, itemRenderCount, measurements])
 
     const calcChildren = useMemo(() => {
@@ -82,7 +82,7 @@ export function VisualWindow({children, defaultItemHeight, className, itemData, 
                 }
             }
             output.push(
-                createElement<VisualWindowChildProps<HTMLElement>>(children, {
+                createElement<VisualWindowChildProps>(children as React.FunctionComponent, {
                     index: i,
                     data: itemData,
                     style: {
