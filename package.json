@@ -73,7 +73,7 @@
         }
     ],
     "devDependencies": {
-        "@size-limit/preset-small-lib": "^6.0.2",
+        "@size-limit/preset-small-lib": "^6.0.3",
         "@testing-library/react": "^12.1.2",
         "@types/react": "^17.0.27",
         "@types/react-dom": "^17.0.9",
