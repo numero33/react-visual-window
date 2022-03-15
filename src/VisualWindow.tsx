@@ -7,6 +7,7 @@ export interface VisualWindowProps {
     itemData: Array<unknown>
     className?: string
     detectHeight?: boolean
+    overhang?: number
 }
 
 export interface VisualWindowChildProps {
@@ -15,19 +16,25 @@ export interface VisualWindowChildProps {
     style: React.CSSProperties
 }
 
-export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = true}: VisualWindowProps) {
+export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = true, overhang = 0}: VisualWindowProps) {
     const itemCount = useMemo(() => itemData.length, [itemData])
 
-    const [measurements, setMeasurement] = useState<{[k: number]: DOMRect}>({})
+    const [measurements, setMeasurement] = useState<{
+        [k: number]: {
+            width: number
+            height: number
+        }
+    }>({})
 
-    const ref = useRef<HTMLDivElement>(null)
+    const mainRef = useRef<HTMLDivElement>(null)
     const childRef = useRef(new Map<number, HTMLElement>()).current
     const {scrollY: scrollPosition} = useScrollPosition()
 
     const checkMeasurements = useCallback(() => {
         for (const [i, c] of childRef.entries()) {
             const bounding = c.getBoundingClientRect()
-            if (bounding.height !== defaultItemHeight && (measurements[i] === undefined || measurements[i].height !== bounding.height)) setMeasurement(x => ({...x, [i]: bounding}))
+
+            if (bounding.height !== defaultItemHeight && measurements?.[i]?.height !== bounding?.height) setMeasurement(x => ({...x, [i]: {width: bounding.width, height: bounding.height}}))
             if (bounding.height === defaultItemHeight && measurements[i] !== undefined) {
                 setMeasurement(x => {
                     const tmp = {...x}
@@ -47,30 +54,45 @@ export default function VisualWindow({children, defaultItemHeight, className, it
 
     const height = useMemo(() => defaultItemHeight * itemCount + Object.values(measurements).reduce((sum, val) => (sum += val.height - defaultItemHeight), 0), [defaultItemHeight, itemCount, measurements])
 
-    const itemRenderCount = useMemo(() => (defaultItemHeight === 0 ? 0 : Math.min(Math.ceil(Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) / defaultItemHeight), itemCount)), [defaultItemHeight, itemCount])
+    const maxViewWindow = useMemo(() => Math.max(document?.documentElement?.clientHeight ?? 0, window?.innerHeight ?? 0), [document?.documentElement?.clientHeight, window?.innerHeight])
 
     const startItem = useMemo(() => {
-        if (ref.current === null || itemCount === 0) return 0
+        if (itemCount === 0) return 0
 
-        const windowOffset = ref.current.getBoundingClientRect().top
-        if (windowOffset > 0) return 0
-
-        let tmpOffset = windowOffset
         let start = 0
+        const windowOffset = mainRef?.current?.getBoundingClientRect()?.top ?? 0
+        if (windowOffset < 0) {
+            let tmpOffset = windowOffset
+
+            if (Object.keys(measurements).length > 0) {
+                for (; start < itemCount && tmpOffset < 0; start++) tmpOffset += measurements?.[start]?.height ?? defaultItemHeight
+                start--
+            } else start = Math.floor(Math.abs(windowOffset) / defaultItemHeight)
+
+            start = Math.max(start - overhang, 0)
+        }
+        return start
+    }, [mainRef, scrollPosition, defaultItemHeight, itemCount, measurements, overhang])
+
+    const endItem = useMemo(() => {
+        if (itemCount === 0) return 0
+
+        let end = startItem
+        let height = 0
+
         if (Object.keys(measurements).length > 0) {
-            for (; start < itemCount && tmpOffset < 0; start++) tmpOffset += measurements[start] !== undefined ? measurements[start].height : defaultItemHeight
-            start--
-        } else start = Math.floor(Math.abs(windowOffset) / defaultItemHeight)
+            while (height <= maxViewWindow + (measurements?.[startItem]?.height ?? defaultItemHeight)) {
+                height += measurements?.[end]?.height ?? defaultItemHeight
+                end++
+            }
+        } else end = Math.ceil(maxViewWindow / defaultItemHeight) + startItem
 
-        const max = Math.max(itemCount - itemRenderCount, 0)
-
-        return Math.min(Math.max(start, 0), max)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ref, scrollPosition, defaultItemHeight, itemCount, itemRenderCount, measurements])
+        return Math.max(Math.min(end + overhang, itemCount - 1), 0)
+    }, [startItem, defaultItemHeight, itemCount, measurements, maxViewWindow, overhang])
 
     const calcChildren = useMemo(() => {
         const output = []
-        for (let i = startItem; i < itemRenderCount + startItem; i++) {
+        for (let i = startItem; i <= endItem; i++) {
             let addRef = {}
 
             if (typeof children === "object") {
@@ -108,14 +130,13 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             },
             output,
         )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startItem, defaultItemHeight, itemRenderCount, children, itemData, detectHeight])
+    }, [startItem, endItem, children, itemData, detectHeight])
 
     useEffect(() => {
-        if (!detectHeight || !ref.current) return () => {}
+        if (!detectHeight || !mainRef.current) return () => {}
 
         const observer = new MutationObserver(() => checkMeasurements())
-        observer.observe(ref.current, {
+        observer.observe(mainRef.current, {
             attributes: false,
             childList: true,
             subtree: true,
@@ -126,10 +147,10 @@ export default function VisualWindow({children, defaultItemHeight, className, it
     return createElement(
         "div",
         {
-            ref,
+            ref: mainRef,
             style: {position: "relative", height},
             className,
         },
-        itemCount > 0 && itemRenderCount > 0 && calcChildren,
+        itemCount > 0 && calcChildren,
     )
 }
