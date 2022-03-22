@@ -1,0 +1,37 @@
+title: Visual Window
+description: React components for fast and efficiently rendering large lists
+lsi: false
+safe: true
+source:
+incremental: false
+highlighter: rouge
+# theme: jekyll-theme-architect
+# theme: jekyll-theme-midnight
+remote_theme: just-the-docs/just-the-docs
+gist:
+    noscript: false
+kramdown:
+    math_engine: mathjax
+    syntax_highlighter: rouge
+permalink: pretty
+aux_links:
+    "GitHub Repo":
+        - "//github.com/numero33/react-visual-window"
+back_to_top: true
+back_to_top_text: "Back to top"
+heading_anchors: true
+# baseurl: /ea-governance/ea-standards
+# Footer "Edit this page on GitHub" link text
+compress_html:
+    clippings: all
+    comments: all
+    endings: all
+    startings: []
+    blanklines: false
+    profile: false
+    # ignore:
+    #   envs: all
+exclude:
+    - "README.md"
+plugins:
+    - jekyll-relative-links
