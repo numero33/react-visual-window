@@ -33,6 +33,7 @@ export default function VisualWindow({children, defaultItemHeight, className, it
     const checkMeasurements = useCallback(() => {
         for (const [i, c] of childRef.entries()) {
             const bounding = c.getBoundingClientRect()
+            if (bounding.height === 0 || bounding.width === 0) continue
 
             if (bounding.height !== defaultItemHeight && measurements?.[i]?.height !== bounding?.height) setMeasurement(x => ({...x, [i]: {width: bounding.width, height: bounding.height}}))
             if (bounding.height === defaultItemHeight && measurements[i] !== undefined) {
