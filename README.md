@@ -8,7 +8,10 @@ React window works by only rendering *part* of a large data set (just enough to 
 1. It reduces the amount of work (and time) required to render the initial view and to process updates.
 2. It reduces the memory footprint by avoiding over-allocation of DOM nodes.
 
-[![NPM registry](https://img.shields.io/npm/v/react-visual-window.svg?style=for-the-badge)](https://npmjs.com/react-visual-window) [![NPM license](https://img.shields.io/badge/license-mit-red.svg?style=for-the-badge)](LICENSE.md)
+[![Coverage Status](https://badgen.net/coveralls/c/github/numero33/react-visual-window/master)](https://coveralls.io/github/numero33/react-visual-window?branch=master)
+[![NPM registry](https://badgen.net/npm/v/react-visual-window)](https://npmjs.com/react-visual-window)
+[![bundlephobia](https://badgen.net/bundlephobia/minzip/react-visual-window)](https://bundlephobia.com/package/react-visual-window)
+[![NPM license](https://badgen.net/npm/license/react-visual-window)](LICENSE.md) 
 
 ## Install
 

@@ -27,7 +27,7 @@
         "src"
     ],
     "engines": {
-        "node": ">=10"
+        "node": ">=14"
     },
     "scripts": {
         "start": "tsc --watch",
@@ -50,12 +50,8 @@
     },
     "size-limit": [
         {
-            "path": "dist/react-visual-window.cjs.production.min.js",
-            "limit": "2 KB"
-        },
-        {
-            "path": "dist/react-visual-window.esm.js",
-            "limit": "2 KB"
+            "path": "dist/*.js",
+            "limit": "3 KB"
         }
     ],
     "devDependencies": {
