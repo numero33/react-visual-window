@@ -1,5 +1,5 @@
-import {useRef, useState, useMemo, createElement, useEffect, useCallback} from "react"
-import useScrollPosition from "./useScrollPosition"
+import {useRef, useState, useMemo, createElement, useEffect, useCallback} from 'react'
+import useScrollPosition from './useScrollPosition'
 
 export interface VisualWindowProps {
     children: unknown
@@ -17,7 +17,7 @@ export interface VisualWindowChildProps {
 }
 
 export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = true, overhang = 0}: VisualWindowProps) {
-    const itemCount = useMemo(() => itemData.length, [itemData])
+    const itemCount = useMemo(() => itemData?.length ?? 0, [itemData])
 
     const [measurements, setMeasurement] = useState<{
         [k: number]: {
@@ -35,7 +35,8 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             const bounding = c.getBoundingClientRect()
             if (bounding.height === 0 || bounding.width === 0) continue
 
-            if (bounding.height !== defaultItemHeight && measurements?.[i]?.height !== bounding?.height) setMeasurement(x => ({...x, [i]: {width: bounding.width, height: bounding.height}}))
+            if (bounding.height !== defaultItemHeight && measurements?.[i]?.height !== bounding?.height)
+                setMeasurement(x => ({...x, [i]: {width: bounding.width, height: bounding.height}}))
             if (bounding.height === defaultItemHeight && measurements[i] !== undefined) {
                 setMeasurement(x => {
                     const tmp = {...x}
@@ -44,24 +45,27 @@ export default function VisualWindow({children, defaultItemHeight, className, it
                 })
             }
         }
-    }, [childRef, defaultItemHeight, measurements])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [defaultItemHeight])
 
-    useEffect(() => {
-        if (!detectHeight && Object.keys(measurements).length > 0) setMeasurement({})
-    }, [detectHeight, measurements])
-    useEffect(() => {
-        if (detectHeight) checkMeasurements()
-    }, [checkMeasurements, detectHeight, itemData])
+    useEffect(() => checkMeasurements(), [checkMeasurements])
 
-    const height = useMemo(() => defaultItemHeight * itemCount + Object.values(measurements).reduce((sum, val) => (sum += val.height - defaultItemHeight), 0), [defaultItemHeight, itemCount, measurements])
+    useEffect(() => setMeasurement({}), [itemData])
 
-    const maxViewWindow = useMemo(() => Math.max(document?.documentElement?.clientHeight ?? 0, window?.innerHeight ?? 0), [document?.documentElement?.clientHeight, window?.innerHeight])
+    const height = useMemo(
+        () => defaultItemHeight * itemCount + Object.values(measurements).reduce((sum, val) => (sum += val.height - defaultItemHeight), 0),
+        [defaultItemHeight, itemCount, measurements],
+    )
+
+    const maxViewWindow = useMemo(() => Math.max(document?.documentElement?.clientHeight ?? 0, window?.innerHeight ?? 0), [])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const windowOffset = useMemo(() => mainRef?.current?.getBoundingClientRect()?.top ?? 0, [scrollPosition, mainRef])
 
     const startItem = useMemo(() => {
         if (itemCount === 0) return 0
 
         let start = 0
-        const windowOffset = mainRef?.current?.getBoundingClientRect()?.top ?? 0
         if (windowOffset < 0) {
             let tmpOffset = windowOffset
 
@@ -73,7 +77,7 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             start = Math.max(start - overhang, 0)
         }
         return start
-    }, [mainRef, scrollPosition, defaultItemHeight, itemCount, measurements, overhang])
+    }, [windowOffset, defaultItemHeight, itemCount, measurements, overhang])
 
     const endItem = useMemo(() => {
         if (itemCount === 0) return 0
@@ -96,7 +100,7 @@ export default function VisualWindow({children, defaultItemHeight, className, it
         for (let i = startItem; i <= endItem; i++) {
             let addRef = {}
 
-            if (typeof children === "object") {
+            if (typeof children === 'object') {
                 addRef = {
                     ref: (x: HTMLElement) => {
                         if (x === null) childRef.delete(i)
@@ -109,8 +113,8 @@ export default function VisualWindow({children, defaultItemHeight, className, it
                     index: i,
                     data: itemData,
                     style: {
-                        width: "100%",
-                        height: detectHeight ? "auto" : defaultItemHeight,
+                        width: '100%',
+                        height: detectHeight ? 'auto' : defaultItemHeight,
                     },
                     key: i,
                     ...addRef,
@@ -118,22 +122,27 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             )
         }
 
-        const measurementCorrection = Object.keys(measurements).reduce((sum, val: unknown) => ((val as number) < startItem ? sum + measurements[val as number].height - defaultItemHeight : sum), 0)
+        const measurementCorrection = Object.keys(measurements).reduce(
+            (sum, val: unknown) => ((val as number) < startItem ? sum + measurements[val as number].height - defaultItemHeight : sum),
+            0,
+        )
 
         return createElement(
-            "div",
+            'div',
             {
                 style: {
-                    position: "absolute",
+                    position: 'absolute',
                     top: startItem * defaultItemHeight + measurementCorrection,
-                    width: "100%",
+                    width: '100%',
                 },
             },
             output,
         )
-    }, [startItem, endItem, children, itemData, detectHeight])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [startItem, endItem, children, itemData, detectHeight, defaultItemHeight])
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         if (!detectHeight || !mainRef.current) return () => {}
 
         const observer = new MutationObserver(() => checkMeasurements())
@@ -146,10 +155,10 @@ export default function VisualWindow({children, defaultItemHeight, className, it
     }, [detectHeight, checkMeasurements])
 
     return createElement(
-        "div",
+        'div',
         {
             ref: mainRef,
-            style: {position: "relative", height},
+            style: {position: 'relative', height},
             className,
         },
         itemCount > 0 && calcChildren,
