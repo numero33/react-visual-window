@@ -1,5 +1,5 @@
-import {useRef, useState, useMemo, createElement, useEffect, useCallback} from "react"
-import useScrollPosition from "./useScrollPosition"
+import {useRef, useState, useMemo, createElement, useEffect, useCallback} from 'react'
+import useScrollPosition from './useScrollPosition'
 
 export interface VisualWindowProps {
     children: unknown
@@ -35,7 +35,8 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             const bounding = c.getBoundingClientRect()
             if (bounding.height === 0 || bounding.width === 0) continue
 
-            if (bounding.height !== defaultItemHeight && measurements?.[i]?.height !== bounding?.height) setMeasurement(x => ({...x, [i]: {width: bounding.width, height: bounding.height}}))
+            if (bounding.height !== defaultItemHeight && measurements?.[i]?.height !== bounding?.height)
+                setMeasurement(x => ({...x, [i]: {width: bounding.width, height: bounding.height}}))
             if (bounding.height === defaultItemHeight && measurements[i] !== undefined) {
                 setMeasurement(x => {
                     const tmp = {...x}
@@ -53,9 +54,15 @@ export default function VisualWindow({children, defaultItemHeight, className, it
         if (detectHeight) checkMeasurements()
     }, [checkMeasurements, detectHeight, itemData])
 
-    const height = useMemo(() => defaultItemHeight * itemCount + Object.values(measurements).reduce((sum, val) => (sum += val.height - defaultItemHeight), 0), [defaultItemHeight, itemCount, measurements])
+    const height = useMemo(
+        () => defaultItemHeight * itemCount + Object.values(measurements).reduce((sum, val) => (sum += val.height - defaultItemHeight), 0),
+        [defaultItemHeight, itemCount, measurements],
+    )
 
-    const maxViewWindow = useMemo(() => Math.max(document?.documentElement?.clientHeight ?? 0, window?.innerHeight ?? 0), [document?.documentElement?.clientHeight, window?.innerHeight])
+    const maxViewWindow = useMemo(
+        () => Math.max(document?.documentElement?.clientHeight ?? 0, window?.innerHeight ?? 0),
+        [document?.documentElement?.clientHeight, window?.innerHeight],
+    )
 
     const startItem = useMemo(() => {
         if (itemCount === 0) return 0
@@ -96,7 +103,7 @@ export default function VisualWindow({children, defaultItemHeight, className, it
         for (let i = startItem; i <= endItem; i++) {
             let addRef = {}
 
-            if (typeof children === "object") {
+            if (typeof children === 'object') {
                 addRef = {
                     ref: (x: HTMLElement) => {
                         if (x === null) childRef.delete(i)
@@ -109,8 +116,8 @@ export default function VisualWindow({children, defaultItemHeight, className, it
                     index: i,
                     data: itemData,
                     style: {
-                        width: "100%",
-                        height: detectHeight ? "auto" : defaultItemHeight,
+                        width: '100%',
+                        height: detectHeight ? 'auto' : defaultItemHeight,
                     },
                     key: i,
                     ...addRef,
@@ -118,15 +125,18 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             )
         }
 
-        const measurementCorrection = Object.keys(measurements).reduce((sum, val: unknown) => ((val as number) < startItem ? sum + measurements[val as number].height - defaultItemHeight : sum), 0)
+        const measurementCorrection = Object.keys(measurements).reduce(
+            (sum, val: unknown) => ((val as number) < startItem ? sum + measurements[val as number].height - defaultItemHeight : sum),
+            0,
+        )
 
         return createElement(
-            "div",
+            'div',
             {
                 style: {
-                    position: "absolute",
+                    position: 'absolute',
                     top: startItem * defaultItemHeight + measurementCorrection,
-                    width: "100%",
+                    width: '100%',
                 },
             },
             output,
@@ -146,10 +156,10 @@ export default function VisualWindow({children, defaultItemHeight, className, it
     }, [detectHeight, checkMeasurements])
 
     return createElement(
-        "div",
+        'div',
         {
             ref: mainRef,
-            style: {position: "relative", height},
+            style: {position: 'relative', height},
             className,
         },
         itemCount > 0 && calcChildren,
