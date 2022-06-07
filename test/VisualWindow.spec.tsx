@@ -1,10 +1,10 @@
-import {render} from "@testing-library/react"
-import VisualWindow from "../src"
+import {render} from '@testing-library/react'
+import VisualWindow from '../src'
 
 const itemData = new Array(100).fill(null).map((_, i) => ({odd: i % 2}))
 
-describe("it", () => {
-    it("should render an empty list", () => {
+describe('it', () => {
+    it('should render an empty list', () => {
         const itemRenderer = jest.fn(({style, ...rest}) => <div style={style}>{JSON.stringify(rest, null, 2)}</div>)
         const Row = (props: unknown) => itemRenderer(props)
         const props = {
@@ -16,7 +16,7 @@ describe("it", () => {
         expect(itemRenderer).not.toHaveBeenCalled()
     })
 
-    it("should render a list of rows", () => {
+    it('should render a list of rows', () => {
         const itemRenderer = jest.fn(({style, ...rest}) => <div style={style}>{JSON.stringify(rest, null, 2)}</div>)
         const Row = (props: unknown) => itemRenderer(props)
         render(
@@ -27,7 +27,7 @@ describe("it", () => {
         expect(itemRenderer).toHaveBeenCalledTimes(9)
     })
 
-    it("should render a list of rows disable detectHeight", () => {
+    it('should render a list of rows disable detectHeight', () => {
         const itemRenderer = jest.fn(({style, ...rest}) => <div style={style}>{JSON.stringify(rest, null, 2)}</div>)
         const Row = (props: unknown) => itemRenderer(props)
         render(
@@ -38,25 +38,26 @@ describe("it", () => {
         expect(itemRenderer).toHaveBeenCalledTimes(9)
     })
 
-    // it("should render a list of rows and scroll to 100", () => {
-    //     Object.defineProperty(window, "scrollY", {value: 1000, writable: true})
-
+    // it('should render a list of rows and scroll to 100', async () => {
     //     const itemRenderer = jest.fn(({style, ...rest}) => <div style={style}>{JSON.stringify(rest, null, 2)}</div>)
     //     const Row = (props: unknown) => itemRenderer(props)
-    //     const {container} = render(
+    //     render(
     //         <div>
     //             <VisualWindow itemData={itemData} defaultItemHeight={100}>
     //                 {Row}
     //             </VisualWindow>
     //         </div>,
     //     )
-    //     expect(itemRenderer).toHaveBeenCalledTimes(8)
+    //     expect(itemRenderer).toHaveBeenCalledTimes(9)
 
+    //     // const scroll = userEvent.setup()
+    //     console.log(window.scrollY)
     //     // global.scrollTo = jest.fn()
-    //     // fireEvent.scroll(window, {scrollY: 500})
+    //     await fireEvent.scroll(window, {target: {scrollY: 1000}})
     //     // global.scrollTo({top: 100})
-    //     simulateScroll(container, 100)
+    //     // simulateScroll(container, 100)
+    //     console.log(window.scrollY)
 
-    //     expect(itemRenderer).toHaveBeenCalledTimes(8)
+    //     expect(itemRenderer).toHaveBeenCalledTimes(9)
     // })
 })

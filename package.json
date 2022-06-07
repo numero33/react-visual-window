@@ -22,7 +22,6 @@
         "table"
     ],
     "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
     "files": [
         "dist",
         "src"
@@ -31,13 +30,13 @@
         "node": ">=10"
     },
     "scripts": {
-        "start": "tsdx watch",
-        "build": "tsdx build",
-        "test": "tsdx test --passWithNoTests",
+        "start": "tsc --watch",
+        "build": "tsc",
+        "test": "jest --passWithNoTests",
         "test:coverage": "yarn run test --coverage",
         "coverage:report": "open coverage/lcov-report/index.html",
-        "lint": "tsdx lint",
-        "prepare": "tsdx build",
+        "lint": "eslint",
+        "prepare": "yarn run build",
         "size": "size-limit",
         "analyze": "size-limit --why"
     },
@@ -49,19 +48,6 @@
             "pre-commit": "tsdx lint"
         }
     },
-    "prettier": {
-        "printWidth": 1000,
-        "tabWidth": 4,
-        "useTabs": false,
-        "semi": false,
-        "singleQuote": false,
-        "trailingComma": "all",
-        "bracketSpacing": false,
-        "jsxBracketSameLine": true,
-        "arrowParens": "avoid",
-        "endOfLine": "auto"
-    },
-    "module": "dist/react-visual-window.esm.js",
     "size-limit": [
         {
             "path": "dist/react-visual-window.cjs.production.min.js",
@@ -74,15 +60,26 @@
     ],
     "devDependencies": {
         "@size-limit/preset-small-lib": "^7.0.8",
-        "@testing-library/react": "^12.1.4",
-        "@types/react": "^17.0.40",
-        "@types/react-dom": "^18.0.3",
-        "husky": "^7.0.4",
-        "react": "^18.0.0",
-        "react-dom": "^18.0.0",
+        "@testing-library/react": "^13.3.0",
+        "@types/jest": "^28.1.1",
+        "@types/react": "^18.0.12",
+        "@types/react-dom": "^18.0.5",
+        "@typescript-eslint/eslint-plugin": "^5.27.1",
+        "@typescript-eslint/parser": "^5.27.1",
+        "eslint": "^8.17.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-react-hooks": "^4.5.0",
+        "husky": "^8.0.1",
+        "jest": "^28.1.1",
+        "jest-environment-jsdom": "^28.1.1",
+        "prettier": "^2.6.2",
+        "react": "^18.1.0",
+        "react-dom": "^18.1.0",
         "size-limit": "^7.0.8",
-        "tsdx": "^0.14.1",
-        "tslib": "^2.3.1",
+        "ts-jest": "^28.0.4",
+        "tslib": "^2.4.0",
         "typescript": "^4.7.3"
     }
 }

@@ -1,2 +1,2 @@
-export * from "./VisualWindow"
-export {default} from "./VisualWindow"
+export * from './VisualWindow'
+export {default} from './VisualWindow'
