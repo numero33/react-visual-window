@@ -17,8 +17,8 @@ jobs:
               with:
                   node-version: 14
             - run: |
-                  npm install
-                  npm run test:coverage
+                  yarn install
+                  yarn run test:coverage
 
             - name: Coveralls
               uses: coverallsapp/github-action@master
