@@ -72,7 +72,7 @@
         "jest-environment-jsdom": "^28.1.1",
         "prettier": "^2.7.1",
         "react": "^18.2.0",
-        "react-dom": "^18.1.0",
+        "react-dom": "^18.2.0",
         "size-limit": "^7.0.8",
         "ts-jest": "^28.0.5",
         "tslib": "^2.4.0",
