@@ -48,9 +48,10 @@ export default function VisualWindow({children, defaultItemHeight, className, it
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [defaultItemHeight])
 
-    useEffect(() => checkMeasurements(), [checkMeasurements])
-
-    useEffect(() => setMeasurement({}), [itemData])
+    useEffect(() => {
+        if (detectHeight) checkMeasurements()
+        else setMeasurement({})
+    }, [itemData, detectHeight, checkMeasurements])
 
     const height = useMemo(
         () => defaultItemHeight * itemCount + Object.values(measurements).reduce((sum, val) => (sum += val.height - defaultItemHeight), 0),
@@ -139,7 +140,7 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             output,
         )
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startItem, endItem, children, itemData, detectHeight, defaultItemHeight])
+    }, [measurements, startItem, defaultItemHeight, endItem, children, itemData, detectHeight])
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
