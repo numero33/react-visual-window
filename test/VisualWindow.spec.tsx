@@ -35,7 +35,7 @@ describe('it', () => {
                 {Row}
             </VisualWindow>,
         )
-        expect(itemRenderer).toHaveBeenCalledTimes(9)
+        expect(itemRenderer).toHaveBeenCalledTimes(18)
     })
 
     // it('should render a list of rows and scroll to 100', async () => {
