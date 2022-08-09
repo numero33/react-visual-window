@@ -16,7 +16,7 @@ export interface VisualWindowChildProps {
     style: React.CSSProperties
 }
 
-export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = true, overhang = 0}: VisualWindowProps) {
+export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = false, overhang = 0}: VisualWindowProps) {
     const itemCount = useMemo(() => itemData?.length ?? 0, [itemData])
 
     const [measurements, setMeasurement] = useState<{
