@@ -62,24 +62,26 @@ export default function VisualWindow({children, defaultItemHeight, className, it
         [currentContainer],
     )
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const windowOffset = useMemo(() => mainRef?.current?.getBoundingClientRect()?.top ?? 0, [scrollPosition, mainRef])
+    const windowOffset = useMemo(() => {
+        if (currentContainer) return -scrollPosition
+        return mainRef?.current?.getBoundingClientRect()?.top ?? 0
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [scrollPosition, mainRef, currentContainer])
 
     const startItem = useMemo(() => {
         if (itemCount === 0) return 0
 
         let start = 0
-        if (windowOffset < 0) {
-            let tmpOffset = windowOffset
+        if (windowOffset >= 0) return start
 
-            if (Object.keys(measurements).length > 0) {
-                for (; start < itemCount && tmpOffset < 0; start++) tmpOffset += measurements?.[start]?.height ?? defaultItemHeight
-                start--
-            } else start = Math.floor(Math.abs(windowOffset) / defaultItemHeight)
+        let tmpOffset = windowOffset
 
-            start = Math.max(start - overhang, 0)
-        }
-        return start
+        if (Object.keys(measurements).length > 0) {
+            for (; start < itemCount && tmpOffset < 0; start++) tmpOffset += measurements?.[start]?.height ?? defaultItemHeight
+            start--
+        } else start = Math.floor(Math.abs(tmpOffset) / defaultItemHeight)
+
+        return Math.max(start - overhang, 0)
     }, [windowOffset, defaultItemHeight, itemCount, measurements, overhang])
 
     const endItem = useMemo(() => {

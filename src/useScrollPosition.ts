@@ -22,7 +22,7 @@ export interface useScrollPositionReturn {
 
 export default function useScrollPosition({element, wait}: useScrollPositionProps): useScrollPositionReturn {
     const useElement = element?.current ?? undefined
-    const [position, setPosition] = useState({} as useScrollPositionReturn)
+    const [position, setPosition] = useState({x: 0, y: 0})
 
     let throttleTimeout: number | null = null
 
