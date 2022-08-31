@@ -1,4 +1,4 @@
-import {useRef, useState, useMemo, createElement, useEffect, useCallback} from 'react'
+import {useRef, useState, useMemo, createElement, useEffect, useCallback, MutableRefObject} from 'react'
 import useScrollPosition from './useScrollPosition'
 
 export interface VisualWindowProps {
@@ -8,6 +8,7 @@ export interface VisualWindowProps {
     className?: string
     detectHeight?: boolean
     overhang?: number
+    container?: MutableRefObject<HTMLElement | null>
 }
 
 export interface VisualWindowChildProps {
@@ -16,7 +17,7 @@ export interface VisualWindowChildProps {
     style: React.CSSProperties
 }
 
-export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = false, overhang = 0}: VisualWindowProps) {
+export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = false, overhang = 0, container}: VisualWindowProps) {
     const itemCount = useMemo(() => itemData?.length ?? 0, [itemData])
 
     const [measurements, setMeasurement] = useState<{
@@ -28,23 +29,20 @@ export default function VisualWindow({children, defaultItemHeight, className, it
 
     const mainRef = useRef<HTMLDivElement>(null)
     const childRef = useRef(new Map<number, HTMLElement>()).current
-    const {scrollY: scrollPosition} = useScrollPosition()
+
+    const {y: scrollPosition} = useScrollPosition({element: container, wait: 150})
 
     const checkMeasurements = useCallback(() => {
-        for (const [i, c] of childRef.entries()) {
-            const bounding = c.getBoundingClientRect()
-            if (bounding.height === 0 || bounding.width === 0) continue
-
-            if (bounding.height !== defaultItemHeight && measurements?.[i]?.height !== bounding?.height)
-                setMeasurement(x => ({...x, [i]: {width: bounding.width, height: bounding.height}}))
-            if (bounding.height === defaultItemHeight && measurements[i] !== undefined) {
-                setMeasurement(x => {
-                    const tmp = {...x}
-                    delete tmp[i]
-                    return tmp
-                })
+        setMeasurement(x => {
+            for (const [i, c] of childRef.entries()) {
+                const bounding = c.getBoundingClientRect()
+                if (bounding.height === 0 || bounding.width === 0) continue
+                if (bounding.height !== defaultItemHeight && x?.[i]?.height !== bounding?.height)
+                    x = {...x, [i]: {width: bounding.width, height: bounding.height}}
+                if (bounding.height === defaultItemHeight && x[i] !== undefined) delete x[i]
             }
-        }
+            return x
+        })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [defaultItemHeight])
 
@@ -58,7 +56,11 @@ export default function VisualWindow({children, defaultItemHeight, className, it
         [defaultItemHeight, itemCount, measurements],
     )
 
-    const maxViewWindow = useMemo(() => Math.max(document?.documentElement?.clientHeight ?? 0, window?.innerHeight ?? 0), [])
+    const currentContainer = container?.current ?? undefined
+    const maxViewWindow = useMemo(
+        () => currentContainer?.clientHeight ?? Math.max(document?.documentElement?.clientHeight ?? 0, window?.innerHeight ?? 0),
+        [currentContainer],
+    )
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const windowOffset = useMemo(() => mainRef?.current?.getBoundingClientRect()?.top ?? 0, [scrollPosition, mainRef])
@@ -140,7 +142,7 @@ export default function VisualWindow({children, defaultItemHeight, className, it
             output,
         )
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [measurements, startItem, defaultItemHeight, endItem, children, itemData, detectHeight])
+    }, [startItem, endItem, children, itemData, detectHeight])
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
