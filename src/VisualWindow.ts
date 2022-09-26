@@ -6,6 +6,7 @@ export interface VisualWindowProps {
     defaultItemHeight: number
     itemData: Array<unknown>
     className?: string
+    innerClassName?: string
     detectHeight?: boolean
     overhang?: number
     container?: MutableRefObject<HTMLElement | null>
@@ -17,7 +18,16 @@ export interface VisualWindowChildProps {
     style: React.CSSProperties
 }
 
-export default function VisualWindow({children, defaultItemHeight, className, itemData, detectHeight = false, overhang = 0, container}: VisualWindowProps) {
+export default function VisualWindow({
+    children,
+    defaultItemHeight,
+    className,
+    innerClassName,
+    itemData,
+    detectHeight = false,
+    overhang = 0,
+    container,
+}: VisualWindowProps) {
     const itemCount = useMemo(() => itemData?.length ?? 0, [itemData])
 
     const [measurements, setMeasurement] = useState<{
@@ -140,6 +150,7 @@ export default function VisualWindow({children, defaultItemHeight, className, it
                     top: startItem * defaultItemHeight + measurementCorrection,
                     width: '100%',
                 },
+                className: innerClassName,
             },
             output,
         )
