@@ -1,10 +1,10 @@
 import {useRef, useState, useMemo, createElement, useEffect, useCallback, MutableRefObject} from 'react'
 import useScrollPosition from './useScrollPosition'
 
-export interface VisualWindowProps {
-    children: unknown
+export interface VisualWindowProps<T> {
+    children: React.FunctionComponent<VisualWindowChildProps<T>>
     defaultItemHeight: number
-    itemData: Array<unknown>
+    itemData: Array<T>
     className?: string
     innerClassName?: string
     detectHeight?: boolean
@@ -12,13 +12,13 @@ export interface VisualWindowProps {
     container?: MutableRefObject<HTMLElement | null>
 }
 
-export interface VisualWindowChildProps {
+export interface VisualWindowChildProps<T = unknown> {
     index: number
-    data: Array<unknown>
+    data: Array<T>
     style: React.CSSProperties
 }
 
-export default function VisualWindow({
+export default function VisualWindow<T>({
     children,
     defaultItemHeight,
     className,
@@ -27,7 +27,7 @@ export default function VisualWindow({
     detectHeight = false,
     overhang = 0,
     container,
-}: VisualWindowProps) {
+}: VisualWindowProps<T>) {
     const itemCount = useMemo(() => itemData?.length ?? 0, [itemData])
 
     const [measurements, setMeasurement] = useState<{
@@ -124,7 +124,7 @@ export default function VisualWindow({
                 }
             }
             output.push(
-                createElement<VisualWindowChildProps>(children as React.FunctionComponent, {
+                createElement<VisualWindowChildProps<T>>(children, {
                     index: i,
                     data: itemData,
                     style: {
@@ -137,10 +137,9 @@ export default function VisualWindow({
             )
         }
 
-        const measurementCorrection = Object.keys(measurements).reduce(
-            (sum, val: unknown) => ((val as number) < startItem ? sum + measurements[val as number].height - defaultItemHeight : sum),
-            0,
-        )
+        const measurementCorrection = Object.keys(measurements)
+            .map(Number)
+            .reduce((sum, val) => (val < startItem ? sum + measurements[val].height - defaultItemHeight : sum), 0)
 
         return createElement(
             'div',

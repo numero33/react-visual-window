@@ -10,10 +10,19 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+
+            - uses: pnpm/action-setup@v2
+              id: pnpm-install
+              with:
+                  version: latest
+                  run_install: false
+
             - uses: actions/setup-node@v3
               with:
-                  node-version: 14
-            - run: yarn install
+                  node-version: 16
+                  cache: 'pnpm'
+
+            - run: pnpm install --reporter=append-only --frozen-lockfile
             - uses: JS-DevTools/npm-publish@v1
               with:
                   token: ${{ secrets.NPM_TOKEN }}
