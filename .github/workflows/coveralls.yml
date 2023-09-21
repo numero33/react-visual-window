@@ -13,12 +13,20 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: latest
+                  run_install: false
+
             - uses: actions/setup-node@v3
               with:
-                  node-version: 14
+                  node-version: 16
+                  cache: 'pnpm'
+
             - run: |
-                  yarn install
-                  yarn run test:coverage
+                  pnpm install --reporter=append-only --frozen-lockfile
+                  pnpm run test:coverage
 
             - name: Coveralls
               uses: coverallsapp/github-action@master
