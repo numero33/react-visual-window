@@ -1094,8 +1094,8 @@ packages:
     resolution: {integrity: sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==}
     dev: true
 
-  /@types/istanbul-lib-report@3.0.1:
-    resolution: {integrity: sha512-gPQuzaPR5h/djlAv2apEG1HVOyj1IUs7GpfMZixU0/0KXT3pm64ylHuMUI1/Akh+sq/iikxg6Z2j+fcMDXaaTQ==}
+  /@types/istanbul-lib-report@3.0.3:
+    resolution: {integrity: sha512-NQn7AHQnk/RSLOxrBbGyJM/aVQ+pjj5HCgasFxc0K/KhoATfQ/47AyUl15I2yBUpihjmas+a+VJBOqecrFH+uA==}
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.4
     dev: true
@@ -1103,7 +1103,7 @@ packages:
   /@types/istanbul-reports@3.0.2:
     resolution: {integrity: sha512-kv43F9eb3Lhj+lr/Hn6OcLCs/sSM8bt+fIaP11rCYngfV6NVjzWXJ17owQtDQTL9tQ8WSLUrGsSJ6rJz0F1w1A==}
     dependencies:
-      '@types/istanbul-lib-report': 3.0.1
+      '@types/istanbul-lib-report': 3.0.3
     dev: true
 
   /@types/jest@29.5.5:
